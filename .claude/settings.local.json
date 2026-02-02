@@ -1,0 +1,43 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C /Users/stephen.g.pope/Development/popebot status)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(docker compose build:*)",
+      "Bash(ls:*)",
+      "Bash(docker compose up:*)",
+      "Bash(docker system:*)",
+      "Bash(docker volume prune:*)",
+      "Bash(docker ps:*)",
+      "Bash(for i in {1..30})",
+      "Bash(do)",
+      "Bash(if grep -q \"7681\" /private/tmp/claude-501/-Users-stephen-g-pope-Development-popebot/tasks/b2dd0da.output)",
+      "Bash(then)",
+      "Bash(break)",
+      "Bash(fi)",
+      "Bash(done)",
+      "Bash(for:*)",
+      "Bash(if grep -q \"Listening on port: 7681\" /private/tmp/claude-501/-Users-stephen-g-pope-Development-popebot/tasks/b3854aa.output)",
+      "Bash(docker logs:*)",
+      "Bash(gh search:*)",
+      "Bash(gh api:*)",
+      "Bash(curl:*)",
+      "Bash(docker restart:*)",
+      "Bash(docker exec:*)",
+      "Bash(docker compose:*)",
+      "WebFetch(domain:www.npmjs.com)",
+      "Bash(git init:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(docker run:*)",
+      "Bash(git checkout:*)",
+      "Bash(docker build:*)",
+      "Bash(docker kill:*)",
+      "Bash(docker stop:*)",
+      "Bash(git remote add:*)",
+      "Bash(chmod:*)"
+    ]
+  }
+}

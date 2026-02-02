@@ -1,18 +1,12 @@
 #!/bin/bash
 set -e
 
-# Generate UUID for this job run
 JOB_ID=$(cat /proc/sys/kernel/random/uuid)
 echo "Job ID: ${JOB_ID}"
 
-# Validate Pi auth.json is mounted
-if [ ! -f /root/.pi/agent/auth.json ]; then
-    echo "ERROR: auth.json not mounted at /root/.pi/agent/auth.json"
-    exit 1
-fi
-
-# Start Chrome headless
-chromium --headless --no-sandbox --disable-gpu --remote-debugging-port=9222 &
+# Start Chrome (using Playwright's chromium)
+CHROME_BIN=$(find /root/.cache/ms-playwright -name "chrome" -path "*/chrome-linux/*" | head -1)
+$CHROME_BIN --headless --no-sandbox --disable-gpu --remote-debugging-port=9222 &
 CHROME_PID=$!
 sleep 2
 
@@ -25,33 +19,39 @@ if [ -n "$GITHUB_TOKEN" ]; then
     chmod 600 ~/.git-credentials
 fi
 
-# Clone repo if REPO_URL set, otherwise assume /job is mounted
+# Clone branch
 if [ -n "$REPO_URL" ]; then
-    # Fast clone: single branch, shallow (depth 1)
     git clone --single-branch --branch "$BRANCH" --depth 1 "${REPO_URL}" /job
     cd /job
 else
     cd /job
 fi
 
-# Setup log directory
+# Point Pi to /job for auth.json
+export PI_CODING_AGENT_DIR=/job
+
+# Setup logs
 LOG_DIR="/job/workspace/logs"
 mkdir -p "${LOG_DIR}"
 
-# Run Pi (print mode - execute and exit)
-pi -p "$(cat /job/workspace/job.md)" --session-dir "${LOG_DIR}"
-
-# Rename Pi's session file to UUID.jsonl
+# 1. Run job (AGENTS.md provides behavior rules, job.md provides the task)
+pi -p "$(cat /job/AGENTS.md /job/workspace/job.md)" --session-dir "${LOG_DIR}"
 mv "${LOG_DIR}"/session-*.jsonl "${LOG_DIR}/${JOB_ID}.jsonl" 2>/dev/null || true
 
-# Commit and push results (only if cloned from remote)
-if [ -n "$REPO_URL" ]; then
-    git add workspace/logs/
-    git commit -m "popebot: job ${JOB_ID} completed" || true
-    git push
+# 2. Commit changes + logs
+git add -A
+git commit -m "popebot: job ${JOB_ID}" || true
+
+# 3. Merge (pi has memory of job via session)
+if [ -n "$REPO_URL" ] && [ -f "/job/MERGE_JOB.md" ]; then
+    pi -p "$(cat /job/MERGE_JOB.md)" --session "${LOG_DIR}/${JOB_ID}.jsonl"
 fi
+
+# 4. Delete logs, commit "done."
+rm -f "${LOG_DIR}/${JOB_ID}.jsonl"
+git add workspace/logs/
+git commit -m "done." || true
 
 # Cleanup
 kill $CHROME_PID 2>/dev/null || true
-
 echo "Done. Job ID: ${JOB_ID}"

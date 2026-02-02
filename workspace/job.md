@@ -1,12 +1,5 @@
-# Test Job: GitHub Integration
+# Test Job: Playwright Browser Control
 
-## Task
+Use Playwright to connect to the browser on CDP port 9222 and take a screenshot of https://example.com
 
-This is a test job to verify the GitHub integration works correctly.
-
-Please:
-1. Print "Hello from popebot!"
-2. List the current directory contents
-3. Report success
-
-This job should complete quickly and commit its logs back to this branch.
+Save the screenshot to workspace/screenshots/test.png
