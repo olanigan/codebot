@@ -1,16 +1,8 @@
-Weather for Claremont, CA (91711)
-Generated: 2026-02-04 06:10 UTC
+Claremont, CA Weather
+Updated: Wednesday, February 4, 2026 at 06:30 AM UTC
 
-Current Conditions:
-  Temperature: 61°F (16°C)
-  Feels Like: 61°F (16°C)
-  Condition: Clear
-  Humidity: 42%
-  Wind: 6 mph NE
-  Visibility: 9 miles
-  UV Index: 0
-
-Astronomy:
-  Sunrise: 06:46 AM
-  Sunset: 05:24 PM
-  Moon Phase: Waning Gibbous
+Current Conditions: ☀️ Clear
+Temperature: +16°C (61°F)
+Wind: ↙ 10 km/h
+Humidity: 42%
+Pressure: 1023 hPa
