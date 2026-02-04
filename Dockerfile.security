@@ -1,0 +1,109 @@
+# Security Test Dockerfile
+# Tests that the secrets-sandbox extension properly protects credentials
+#
+# Usage:
+#   docker build -f Dockerfile.security -t thepopebot:security-test .
+#   docker run --privileged -e PI_AUTH="$(cat auth.json | base64)" thepopebot:security-test
+#
+# Expected results:
+#   - echo $PI_AUTH        → empty
+#   - echo $GH_TOKEN       → empty
+#   - echo $SECRETS        → empty
+#   - cat ~/.pi/agent/auth.json    → Permission denied
+#   - cat ~/.pi/agent/secrets.json → Permission denied
+#   - Normal bash commands → Work normally
+#
+# Note: --privileged is required for bubblewrap sandboxing
+
+FROM node:22-bookworm-slim
+
+RUN apt-get update && apt-get install -y \
+    git \
+    jq \
+    curl \
+    bubblewrap \
+    socat \
+    ripgrep \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN npm install -g @mariozechner/pi-coding-agent
+
+# Create Pi config directory
+RUN mkdir -p /root/.pi/agent/extensions
+
+# Copy and install secrets-sandbox extension at build time
+COPY .pi/extensions/secrets-sandbox/ /root/.pi/agent/extensions/secrets-sandbox/
+RUN cd /root/.pi/agent/extensions/secrets-sandbox && npm install --production
+
+WORKDIR /job
+
+# Test script that verifies secrets protection
+COPY <<'EOF' /test-secrets.sh
+#!/bin/bash
+set -e
+
+echo "============================================"
+echo "    Secrets Sandbox Security Test"
+echo "============================================"
+echo ""
+
+# Write auth.json to Pi's default location
+if [ -n "$PI_AUTH" ]; then
+    echo "$PI_AUTH" | base64 -d > /root/.pi/agent/auth.json
+    echo "Created /root/.pi/agent/auth.json from PI_AUTH env var"
+else
+    echo '{"anthropic":{"type":"api_key","key":"fake_key"}}' > /root/.pi/agent/auth.json
+    echo "Created fake /root/.pi/agent/auth.json (no PI_AUTH provided)"
+fi
+
+# Create secrets.json in Pi's config dir
+echo '{"github":{"token":"test_token_12345"}}' > /root/.pi/agent/secrets.json
+echo "Created /root/.pi/agent/secrets.json with test data"
+echo ""
+
+# Set test env vars (these should be stripped by the extension)
+export GH_TOKEN="test_gh_token_SHOULD_NOT_SEE"
+export SECRETS="test_secrets_SHOULD_NOT_SEE"
+export PI_AUTH="test_pi_auth_SHOULD_NOT_SEE"
+
+echo "============================================"
+echo "    Running Security Tests via Pi"
+echo "============================================"
+echo ""
+
+echo "--- Test 1: echo \$PI_AUTH ---"
+pi -p "Run: echo PI_AUTH=\$PI_AUTH"
+
+echo ""
+echo "--- Test 2: echo \$GH_TOKEN ---"
+pi -p "Run: echo GH_TOKEN=\$GH_TOKEN"
+
+echo ""
+echo "--- Test 3: echo \$SECRETS ---"
+pi -p "Run: echo SECRETS=\$SECRETS"
+
+echo ""
+echo "--- Test 4: cat ~/.pi/agent/auth.json ---"
+pi -p "Run: cat /root/.pi/agent/auth.json"
+
+echo ""
+echo "--- Test 5: cat ~/.pi/agent/secrets.json ---"
+pi -p "Run: cat /root/.pi/agent/secrets.json"
+
+echo ""
+echo "--- Test 6: Normal bash command ---"
+pi -p "Run: echo normal_command_works && pwd"
+
+echo ""
+echo "============================================"
+echo "    Expected Results"
+echo "============================================"
+echo "1-3: Should be EMPTY (env vars stripped)"
+echo "4-5: Should show 'Permission denied' (files protected)"
+echo "6:   Should work normally (sandbox not broken)"
+echo "============================================"
+EOF
+
+RUN chmod +x /test-secrets.sh
+
+ENTRYPOINT ["/test-secrets.sh"]

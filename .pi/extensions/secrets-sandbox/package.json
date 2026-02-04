@@ -1,0 +1,8 @@
+{
+  "name": "secrets-sandbox",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@anthropic-ai/sandbox-runtime": "^0.0.34"
+  }
+}

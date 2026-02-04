@@ -227,7 +227,7 @@ The Docker container executes tasks autonomously using the Pi coding agent.
 2. Start Chrome in headless mode (CDP on port 9222)
 3. Configure Git credentials via `gh auth setup-git`
 4. Clone your repository branch to `/job`
-5. Set `PI_CODING_AGENT_DIR=/job` (so Pi finds auth.json)
+5. Write credentials to `~/.pi/agent/auth.json` (Pi's default location)
 6. Run Pi with THEPOPEBOT.md + SOUL.md + job.md as instructions
 7. Commit all changes: `thepopebot: job {UUID}`
 8. Create PR and auto-merge to main
@@ -273,3 +273,66 @@ Edit `workspace/job.md` with:
 ## Session Logs
 
 Each job creates a session log at `workspace/logs/{JOB_ID}/`. These can be used to resume sessions or review agent actions.
+
+## Security
+
+### Secrets Protection
+
+The agent runs with access to sensitive credentials (API keys, GitHub tokens). The `secrets-sandbox` extension in `.pi/extensions/` protects these from being leaked by the AI agent.
+
+**What's Protected:**
+
+| Attack Vector | Protection |
+|---------------|------------|
+| `echo $GH_TOKEN` | Env var stripped at extension load |
+| `echo $PI_AUTH` | Env var stripped at extension load |
+| `echo $SECRETS` | Env var stripped at extension load |
+| `cat ~/.pi/agent/auth.json` | Blocked by bubblewrap sandbox |
+| `cat ~/.pi/agent/secrets.json` | Blocked by bubblewrap sandbox |
+| Pi `read` tool on secrets | Blocked by tool_call hook |
+
+**How It Works:**
+
+1. **Environment Variables** - The extension deletes `PI_AUTH`, `SECRETS`, and `GH_TOKEN` from `process.env` immediately at module load, before any tool calls can access them.
+
+2. **File Access** - Bash commands are wrapped with [bubblewrap](https://github.com/containers/bubblewrap) sandboxing that denies read access to `~/.pi/agent/auth.json` and `~/.pi/agent/secrets.json`.
+
+3. **Read Tool** - Pi's built-in `read` tool is blocked from accessing protected files via an event hook.
+
+**Requirements:**
+
+- Docker must run with `--privileged` flag for bubblewrap to create namespaces
+- The Dockerfile includes `bubblewrap`, `socat`, and `ripgrep` dependencies
+
+### Security Testing
+
+A dedicated Dockerfile is provided to verify secrets protection:
+
+```bash
+# Build the security test image
+docker build -f Dockerfile.security -t thepopebot:security-test .
+
+# Run the test (requires real auth.json for Pi to work)
+docker run --privileged -e PI_AUTH="$(cat auth.json | base64)" thepopebot:security-test
+```
+
+**Expected Results:**
+- Environment variables → Empty
+- File reads → "Permission denied"
+- Normal bash commands → Work normally
+
+### Custom Extensions
+
+The secrets-sandbox protects against the **AI agent** accessing secrets through Pi's tools. It does NOT sandbox extension code itself.
+
+**If you write custom extensions:**
+
+- Extension code runs in the same Node.js process as Pi
+- Your extension CAN access files directly via `fs.readFileSync()` if needed
+- This is by design - you control what your extensions do
+- Only the AI agent's tool usage is sandboxed
+
+**Best practices for custom extensions:**
+- Don't expose file contents to the AI through custom tools
+- Don't create tools that echo environment variables
+- Review extension code before adding to your agent

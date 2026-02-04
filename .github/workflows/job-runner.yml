@@ -18,4 +18,5 @@ jobs:
             -e BRANCH="${{ github.ref_name }}" \
             -e GH_TOKEN="${{ secrets.GH_TOKEN }}" \
             -e PI_AUTH="${{ secrets.PI_AUTH }}" \
+            -e SECRETS="${{ secrets.SECRETS }}" \
             stephengpope/thepopebot:latest

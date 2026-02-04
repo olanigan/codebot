@@ -31,11 +31,13 @@ fi
 
 cd /job
 
-# Point Pi to /job for auth.json
-export PI_CODING_AGENT_DIR=/job
+# Write credentials to Pi's default location (~/.pi/agent/)
+echo "$PI_AUTH" | base64 -d > /root/.pi/agent/auth.json
 
-# Write PI_AUTH env var to auth.json (base64 encoded to preserve JSON quotes)
-echo "$PI_AUTH" | base64 -d > /job/auth.json
+# Write SECRETS env var to secrets.json (base64 encoded)
+if [ -n "$SECRETS" ]; then
+    echo "$SECRETS" | base64 -d > /root/.pi/agent/secrets.json
+fi
 
 # Clean workspace/tmp
 rm -rf ./workspace/tmp/*
