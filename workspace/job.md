@@ -1,1 +1,1 @@
-Add a newline character to the end of the Dockerfile if one doesn't already exist. Check if the Dockerfile currently ends with a newline, and if not, append one. This ensures the file follows standard formatting conventions.
+Read the file at operating_system/HEARTBEAT.md and complete the tasks described there.
