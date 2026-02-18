@@ -78,11 +78,46 @@ function getTemplateFiles(templatesDir) {
   return files;
 }
 
-function init() {
-  const cwd = process.cwd();
+async function init() {
+  let cwd = process.cwd();
   const packageDir = path.join(__dirname, '..');
   const templatesDir = path.join(packageDir, 'templates');
   const noManaged = args.includes('--no-managed');
+
+  // Guard: warn if the directory is not empty (unless it's an existing thepopebot project)
+  const entries = fs.readdirSync(cwd);
+  if (entries.length > 0) {
+    const pkgPath = path.join(cwd, 'package.json');
+    let isExistingProject = false;
+    if (fs.existsSync(pkgPath)) {
+      try {
+        const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+        const deps = pkg.dependencies || {};
+        const devDeps = pkg.devDependencies || {};
+        if (deps.thepopebot || devDeps.thepopebot) {
+          isExistingProject = true;
+        }
+      } catch {}
+    }
+
+    if (!isExistingProject) {
+      console.log('\nThis directory is not empty.');
+      const { default: inquirer } = await import('inquirer');
+      const { dirName } = await inquirer.prompt([
+        {
+          type: 'input',
+          name: 'dirName',
+          message: 'Project directory name:',
+          default: 'my-popebot',
+        },
+      ]);
+      const newDir = path.resolve(cwd, dirName);
+      fs.mkdirSync(newDir, { recursive: true });
+      process.chdir(newDir);
+      cwd = newDir;
+      console.log(`\nCreated ${dirName}/`);
+    }
+  }
 
   console.log('\nScaffolding thepopebot project...\n');
 
@@ -366,7 +401,7 @@ async function resetAuth() {
 
 switch (command) {
   case 'init':
-    init();
+    await init();
     break;
   case 'setup':
     setup();
