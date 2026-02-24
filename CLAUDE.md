@@ -320,7 +320,7 @@ Defined in `config/TRIGGERS.json`, loaded by `lib/triggers.js`. Each trigger wat
 | `TELEGRAM_VERIFICATION` | Verification code for getting chat ID | For Telegram setup |
 | `TELEGRAM_CHAT_ID` | Default Telegram chat ID for notifications | For Telegram |
 | `GH_WEBHOOK_SECRET` | Secret for GitHub Actions webhook auth | For notifications |
-| `LLM_PROVIDER` | LLM provider: `anthropic`, `openai`, `google`, or `custom` (default: `anthropic`). `custom` uses OpenAI-compatible endpoints (e.g., Ollama) | No |
+| `LLM_PROVIDER` | LLM provider: `openai`, `anthropic`, `google`, or `custom` (default: `openai`). `custom` uses OpenAI-compatible endpoints (e.g., Ollama) | No |
 | `LLM_MODEL` | LLM model name override (provider-specific default if unset) | No |
 | `LLM_MAX_TOKENS` | Max tokens override for LLM responses (default: 4096) | No |
 | `ANTHROPIC_API_KEY` | API key for Anthropic provider | For anthropic provider |
@@ -353,7 +353,7 @@ Key phases: export secrets as env vars → clone repo branch → install skill d
 | `BRANCH` | Branch to clone and work on (e.g., job/uuid) | Yes |
 | `SECRETS` | JSON with protected credentials (GH_TOKEN, ANTHROPIC_API_KEY, etc.) — built at runtime from `AGENT_*` GitHub secrets, filtered from LLM | Yes |
 | `LLM_SECRETS` | JSON with credentials the LLM can access (browser logins, skill API keys) — built at runtime from `AGENT_LLM_*` GitHub secrets | No |
-| `LLM_PROVIDER` | LLM provider for the Pi agent (`anthropic`, `openai`, `google`) | No (default: `anthropic`) |
+| `LLM_PROVIDER` | LLM provider for the Pi agent (`openai`, `anthropic`, `google`) | No (default: `openai`) |
 | `LLM_MODEL` | LLM model name for the Pi agent | No (provider default) |
 
 ## Deployment
@@ -392,8 +392,8 @@ Individual GitHub secrets use a prefix-based naming convention:
 | `JOB_IMAGE_URL` | Full Docker image path for the job agent (e.g., `ghcr.io/myorg/mybot`). GHCR URLs trigger automatic builds via `build-image.yml`. Non-GHCR URLs (e.g., `docker.io/user/mybot`) are pulled directly. | Not set (uses `stephengpope/thepopebot:job-${THEPOPEBOT_VERSION}`) |
 | `EVENT_HANDLER_IMAGE_URL` | Docker image path for the event handler | Not set (uses `stephengpope/thepopebot-event-handler:latest`) |
 | `RUNS_ON` | GitHub Actions runner label (e.g., `self-hosted` for docker-compose runner) | `ubuntu-latest` |
-| `LLM_PROVIDER` | LLM provider for the Pi agent (`anthropic`, `openai`, `google`) | Not set (default: `anthropic`) |
-| `LLM_MODEL` | LLM model name for the Pi agent (e.g., `claude-sonnet-4-5-20250929`) | Not set (provider default) |
+| `LLM_PROVIDER` | LLM provider for the Pi agent (`openai`, `anthropic`, `google`) | Not set (default: `openai`) |
+| `LLM_MODEL` | LLM model name for the Pi agent (e.g., `gpt-4o`) | Not set (provider default) |
 
 ## How Credentials Work
 

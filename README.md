@@ -90,7 +90,7 @@ The wizard walks you through everything:
 - Checks prerequisites (Node.js, Git, GitHub CLI)
 - Creates a GitHub repository and pushes your initial commit
 - Creates a GitHub Personal Access Token (scoped to your repo)
-- Collects API keys (Anthropic required; OpenAI, Brave optional)
+- Collects API keys (OpenAI required; Anthropic, Brave optional)
 - Sets GitHub repository secrets and variables
 - Generates `.env`
 - Builds the project

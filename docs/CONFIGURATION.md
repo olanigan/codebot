@@ -18,7 +18,7 @@ All environment variables for the Event Handler (set in `.env` in your project r
 | `TELEGRAM_WEBHOOK_SECRET` | Secret for webhook validation | No |
 | `TELEGRAM_VERIFICATION` | Verification code for getting your chat ID | For Telegram setup |
 | `GH_WEBHOOK_SECRET` | Secret for GitHub Actions webhook auth | For notifications |
-| `LLM_PROVIDER` | LLM provider: `anthropic`, `openai`, or `google` (default: `anthropic`) | No |
+| `LLM_PROVIDER` | LLM provider: `openai`, `anthropic`, or `google` (default: `openai`) | No |
 | `LLM_MODEL` | LLM model name override (provider-specific default if unset) | No |
 | `ANTHROPIC_API_KEY` | API key for Anthropic provider | For anthropic provider |
 | `OPENAI_API_KEY` | API key for OpenAI provider / Whisper voice transcription | For openai provider or voice |
@@ -57,7 +57,7 @@ Configure in **Settings → Secrets and variables → Actions → Variables**:
 | `JOB_IMAGE_URL` | Docker image path for job agent (e.g., `ghcr.io/myorg/mybot`) | No | `stephengpope/thepopebot:job-${THEPOPEBOT_VERSION}` |
 | `EVENT_HANDLER_IMAGE_URL` | Docker image path for event handler | No | `stephengpope/thepopebot:event-handler-${THEPOPEBOT_VERSION}` |
 | `RUNS_ON` | GitHub Actions runner label (e.g., `self-hosted`) | No | `ubuntu-latest` |
-| `LLM_PROVIDER` | LLM provider (`anthropic`, `openai`, `google`) | No | `anthropic` |
+| `LLM_PROVIDER` | LLM provider (`openai`, `anthropic`, `google`) | No | `openai` |
 | `LLM_MODEL` | LLM model name for the Pi agent | No | Provider default |
 
 ---

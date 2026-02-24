@@ -474,7 +474,7 @@ async function promptForValue(key) {
 async function setAgentSecret(key, value) {
   if (!key) {
     console.error('\n  Usage: thepopebot set-agent-secret <KEY> [VALUE]\n');
-    console.error('  Example: thepopebot set-agent-secret ANTHROPIC_API_KEY\n');
+    console.error('  Example: thepopebot set-agent-secret OPENAI_API_KEY\n');
     process.exit(1);
   }
 
@@ -524,7 +524,7 @@ async function setAgentLlmSecret(key, value) {
 async function setVar(key, value) {
   if (!key) {
     console.error('\n  Usage: thepopebot set-var <KEY> [VALUE]\n');
-    console.error('  Example: thepopebot set-var LLM_MODEL claude-sonnet-4-5-20250929\n');
+    console.error('  Example: thepopebot set-var LLM_MODEL gpt-4o\n');
     process.exit(1);
   }
 

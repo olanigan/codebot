@@ -81,7 +81,7 @@ PROMPT="
 
 $(cat /job/logs/${JOB_ID}/job.md)"
 
-LLM_PROVIDER="${LLM_PROVIDER:-anthropic}"
+LLM_PROVIDER="${LLM_PROVIDER:-openai}"
 
 MODEL_FLAGS="--provider $LLM_PROVIDER"
 if [ -n "$LLM_MODEL" ]; then

@@ -351,7 +351,7 @@ SQLite via Drizzle ORM at `data/thepopebot.sqlite` (override with `DATABASE_PATH
 | `JOB_IMAGE_URL` | Docker image for job agent. GHCR URLs trigger automatic builds via `build-image.yml`. | Default thepopebot image |
 | `EVENT_HANDLER_IMAGE_URL` | Docker image for event handler | Default thepopebot image |
 | `RUNS_ON` | GitHub Actions runner label (e.g., `self-hosted`) | `ubuntu-latest` |
-| `LLM_PROVIDER` | LLM provider for Docker agent (`anthropic`, `openai`, `google`) | `anthropic` |
+| `LLM_PROVIDER` | LLM provider for Docker agent (`openai`, `anthropic`, `google`) | `openai` |
 | `LLM_MODEL` | LLM model name for Docker agent | Provider default |
 
 ## Environment Variables
@@ -385,8 +385,8 @@ SQLite via Drizzle ORM at `data/thepopebot.sqlite` (override with `DATABASE_PATH
 
 | Variable | Description | Required |
 |----------|-------------|----------|
-| `LLM_PROVIDER` | `anthropic`, `openai`, `google`, or `custom` | No (default: `anthropic`) |
-| `LLM_MODEL` | Model name override | No (provider default) |
+| `LLM_PROVIDER` | `openai`, `anthropic`, `google`, or `custom` | No (default: `openai`) |
+| `LLM_MODEL` | Model name override (e.g., `gpt-4o`) | No (provider default) |
 | `LLM_MAX_TOKENS` | Max tokens for LLM responses | No (default: 4096) |
 | `ANTHROPIC_API_KEY` | API key for Anthropic | For anthropic provider |
 | `OPENAI_API_KEY` | API key for OpenAI / Whisper voice transcription | For openai provider or voice |
