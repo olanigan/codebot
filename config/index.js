@@ -17,6 +17,9 @@ export function withThepopebot(nextConfig = {}) {
       ...(nextConfig.serverExternalPackages || []),
       'better-sqlite3',
       'drizzle-orm',
+      'node-cron',
+      'next-auth',
+      '@auth/core',
     ],
   };
 }
